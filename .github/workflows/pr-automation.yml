@@ -1,29 +1,29 @@
-name: PR Automation
-
-on:
-  pull_request:
-    types: [opened, synchronize]
-
-jobs:
-  code-review-agent:
-    name: Code Review Agent
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      - run: npm ci
-      - name: Run Code Review Agent
-        run: npx tsx packages/agents/src/index.ts --task=code-review --pr=${{ github.event.pull_request.number }}
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO_OWNER: mohamedshetarasan-dev
-          REPO_NAME: release-analytics
+# Code Review Agent — DISABLED (manual trigger only, to conserve API tokens)
+# To run manually: npx tsx packages/agents/src/index.ts --task=code-review --pr=<number>
+#
+# on:
+#   pull_request:
+#     types: [opened, synchronize]
+#
+# jobs:
+#   code-review-agent:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       pull-requests: write
+#       contents: read
+#     steps:
+#       - uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
+#       - uses: actions/setup-node@v4
+#         with:
+#           node-version: '20'
+#           cache: 'npm'
+#       - run: npm ci
+#       - name: Run Code Review Agent
+#         run: npx tsx packages/agents/src/index.ts --task=code-review --pr=${{ github.event.pull_request.number }}
+#         env:
+#           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#           REPO_OWNER: mohamedshetarasan-dev
+#           REPO_NAME: release-analytics
