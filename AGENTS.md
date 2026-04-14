@@ -150,9 +150,10 @@ npx tsx packages/agents/src/index.ts --task=product-manager --feature="<Feature 
 
 **Purpose**: Reads the changed files in a Pull Request and posts a structured code review comment covering correctness, test coverage, adherence to outcomes, and potential edge cases.
 
-**Trigger**:
-- Automatic: GitHub Actions `pr-automation.yml` fires on every PR open/sync
-- Manual: `npx tsx packages/agents/src/index.ts --task=code-review --pr=<number>`
+**Trigger** (manual only — automatic trigger disabled to conserve API tokens):
+```bash
+npx tsx packages/agents/src/index.ts --task=code-review --pr=<number>
+```
 
 **System prompt focus**: You are a senior software engineer performing a code review. Assess correctness, test coverage gaps, adherence to the outcome document, TypeScript strictness, and edge cases. Be specific — reference file names and line numbers where possible.
 
