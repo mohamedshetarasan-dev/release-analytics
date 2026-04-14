@@ -1,13 +1,18 @@
 import { v4 as uuidv4 } from 'uuid';
 import { route } from './router';
 import { memory } from '../shared/memory';
-import type { AgentTask, AgentResult } from '../shared/types';
+import { runProductManagerAgent } from '../agents/productManager';
+import { runCodeReviewAgent } from '../agents/codeReview';
+import { runDeveloperAgent } from '../agents/developer';
+import { runTestingAgent } from '../agents/testing';
+import type { AgentTask, AgentResult, AgentName } from '../shared/types';
 
-// Agent implementations wired in Phase 3
-// import { runProductManagerAgent } from '../agents/productManager';
-// import { runDeveloperAgent } from '../agents/developer';
-// import { runCodeReviewAgent } from '../agents/codeReview';
-// import { runTestingAgent } from '../agents/testing';
+const agentRunners: Record<AgentName, (task: AgentTask) => Promise<AgentResult>> = {
+  'product-manager': runProductManagerAgent,
+  'code-review':     runCodeReviewAgent,
+  'developer':       runDeveloperAgent,
+  'testing':         runTestingAgent,
+};
 
 export async function runOrchestrator(
   type: AgentTask['type'],
@@ -26,27 +31,44 @@ export async function runOrchestrator(
   const sequence = route(task);
   const results: AgentResult[] = [];
 
-  console.info(`[Orchestrator] Task ${taskId}: running agents ${sequence.join(' → ')}`);
+  console.info(`[Orchestrator] Task ${taskId}`);
+  console.info(`[Orchestrator] Sequence: ${sequence.join(' → ')}`);
 
   for (const agentName of sequence) {
-    console.info(`[Orchestrator] Invoking ${agentName} agent...`);
+    console.info(`\n[Orchestrator] ─── Running ${agentName} ───`);
 
-    // Placeholder — agent implementations wired in Phase 3
-    const result: AgentResult = {
-      taskId,
-      agent: agentName,
-      success: false,
-      output: `Agent ${agentName} not yet implemented (Phase 3)`,
-      toolsUsed: [],
-    };
+    const runner = agentRunners[agentName];
+    const agentTask: AgentTask = { ...task, type: agentName };
+
+    let result: AgentResult;
+    try {
+      result = await runner(agentTask);
+    } catch (err) {
+      result = {
+        taskId,
+        agent: agentName,
+        success: false,
+        output: '',
+        toolsUsed: [],
+        error: String(err),
+      };
+    }
 
     results.push(result);
+
     memory.update(taskId, {
       agentHistory: [
         ...(memory.get(taskId)?.agentHistory ?? []),
         { agent: agentName, result, timestamp: Date.now() },
       ],
     });
+
+    if (!result.success && result.error) {
+      console.error(`[Orchestrator] ${agentName} failed: ${result.error}`);
+      break; // Stop the pipeline on hard failure
+    }
+
+    console.info(`[Orchestrator] ${agentName} complete. Tools used: ${result.toolsUsed.join(', ') || 'none'}`);
   }
 
   return results;
