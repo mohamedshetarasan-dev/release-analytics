@@ -3,6 +3,7 @@ import AppShell from './components/layout/AppShell';
 import DashboardPage from './pages/DashboardPage';
 import ImportPage from './pages/ImportPage';
 import ReleasesPage from './pages/ReleasesPage';
+import ComparePage from './pages/ComparePage';
 import SettingsPage from './pages/SettingsPage';
 
 export default function App() {
@@ -13,6 +14,7 @@ export default function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/import" element={<ImportPage />} />
         <Route path="/releases" element={<ReleasesPage />} />
+        <Route path="/compare" element={<ComparePage />} />
         <Route path="/settings" element={<SettingsPage />} />
       </Routes>
     </AppShell>

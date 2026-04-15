@@ -28,7 +28,18 @@
       "Bash(bun --version)",
       "Bash(npm --version)",
       "Bash(node -e \"const e = require\\('/Users/Sheta/My Files/4. Projects/ReleaseAnalytics/packages/backend/node_modules/express'\\); console.log\\(e.version\\)\")",
-      "Bash(npm view:*)"
+      "Bash(npm view:*)",
+      "Bash(gh pr create --title 'feat: Phase 1 — Backend Core' --body ':*)",
+      "Bash(npm test:*)",
+      "Bash(npx tsc:*)",
+      "Bash(gh pr create --base main --head feat/phase2-frontend --title 'feat: Phase 2 — React frontend with charts, upload, and dashboard' --body ':*)",
+      "Bash(node -e \"require\\('./src/app'\\)\")",
+      "Read(//tmp/**)",
+      "Bash(curl -s http://localhost:3001/api/v1/releases)",
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -s \"http://localhost:3001/api/v1/releases/fcc0a16b-6c5c-4300-95a3-a12eb5a357cb/work-items?type=bug&limit=10\")",
+      "Bash(curl -s \"http://localhost:3001/api/v1/releases/fcc0a16b-6c5c-4300-95a3-a12eb5a357cb/metrics\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3001/)"
     ]
   }
 }

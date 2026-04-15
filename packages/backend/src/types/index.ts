@@ -53,6 +53,7 @@ export interface ReleaseMetrics {
   plannedHours: number;
   actualHours: number;
   effortVariancePercent: number | null;
+  userStoryCount: number;
   storyPoints: number;
 }
 
