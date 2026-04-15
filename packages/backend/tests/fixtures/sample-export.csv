@@ -1,0 +1,12 @@
+ID,Work Item Type,Parent,Title,Assigned To,State,Tags,Release Version,Created Date,Activated Date,Resolved Date,Closed Date,Iteration Path,Original Estimate,Completed Work,Story Points
+101,User Story,,Enable CSV upload,Alice Smith <alice@co.com>,Active,,3.20.1,2025-01-01,2025-01-05,,,Project\Sprint 1,,,8
+102,Task,101,Build upload endpoint,Bob Jones <bob@co.com>,Closed,,3.20.1,2025-01-02,2025-01-06,,2025-01-20,Project\Sprint 1,16,14,
+103,Task,101,Write upload tests,Alice Smith <alice@co.com>,Closed,,3.20.1,2025-01-02,2025-01-07,,2025-01-22,Project\Sprint 1,8,10,
+104,Bug,101,File size validation fails,Bob Jones <bob@co.com>,Resolved,validation,3.20.1,2025-01-10,2025-01-11,2025-01-13,,Project\Sprint 1,,,
+105,Bug,101,CSV encoding issue,,Resolved,,3.20.1,2025-01-12,2025-01-13,2025-01-15,,Project\Sprint 1,,,
+106,User Story,,Dashboard chart rendering,Alice Smith <alice@co.com>,Closed,,4.0.0,2025-02-01,2025-02-03,,2025-02-28,Project\Sprint 2,,,13
+107,Task,106,Implement bar chart,Bob Jones <bob@co.com>,Closed,,4.0.0,2025-02-02,2025-02-04,,2025-02-15,Project\Sprint 2,24,20,
+108,Bug,106,Chart tooltip missing,Alice Smith <alice@co.com>,Closed,,4.0.0,2025-02-10,2025-02-11,2025-02-12,2025-02-12,Project\Sprint 2,,,
+109,Test Case,101,Upload test case,Bob Jones <bob@co.com>,Active,,,2025-01-03,,,,Project\Sprint 1,,,
+110,Release Note,,Release 3.20.1 notes,,Active,,,2025-01-25,,,,Project\Sprint 1,,,
+111,Bug,,Orphan bug no parent,Bob Jones <bob@co.com>,Active,,,2025-01-20,2025-01-21,,,,,,

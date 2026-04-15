@@ -9,7 +9,26 @@
       "Bash(gh auth:*)",
       "Bash(git --version)",
       "Bash(brew install:*)",
-      "Bash(gh repo:*)"
+      "Bash(gh repo:*)",
+      "Bash(npm run:*)",
+      "Bash(npx jest:*)",
+      "Bash(node-pre-gyp install:*)",
+      "Bash(node_modules/.bin/node-pre-gyp install:*)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d.get\\('scripts', {}\\)\\)\")",
+      "Bash(../../.bin/prebuild-install)",
+      "Bash(prebuild-install)",
+      "Bash(node -e \"require\\('better-sqlite3'\\)\")",
+      "Bash(node_modules/.bin/jest --rootDir packages/backend --config packages/backend/jest.config.ts --coverage)",
+      "Bash(node-gyp rebuild:*)",
+      "Bash(node_modules/.bin/node-gyp rebuild:*)",
+      "Read(//opt/homebrew/bin/**)",
+      "Read(//opt/homebrew/lib/node_modules/node-gyp/bin/**)",
+      "Bash(npm show:*)",
+      "Bash(node -e \"const v = JSON.parse\\(require\\('fs'\\).readFileSync\\('/dev/stdin','utf-8'\\)\\); console.log\\(v.slice\\(-5\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(bun --version)",
+      "Bash(npm --version)",
+      "Bash(node -e \"const e = require\\('/Users/Sheta/My Files/4. Projects/ReleaseAnalytics/packages/backend/node_modules/express'\\); console.log\\(e.version\\)\")",
+      "Bash(npm view:*)"
     ]
   }
 }

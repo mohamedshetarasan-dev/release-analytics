@@ -1,34 +1,46 @@
-import Database from 'better-sqlite3';
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
+import { createClient, type Client } from '@libsql/client';
+import { drizzle } from 'drizzle-orm/libsql';
 import path from 'path';
 import fs from 'fs';
 import * as schema from '../db/schema';
 import { env } from './env';
 
-let _db: ReturnType<typeof drizzle<typeof schema>> | null = null;
+type Db = ReturnType<typeof drizzle<typeof schema>>;
 
-export function getDb() {
-  if (!_db) {
-    const dbPath = env.NODE_ENV === 'test' ? ':memory:' : env.DATABASE_PATH;
+let _client: Client | null = null;
+let _db: Db | null = null;
 
-    if (dbPath !== ':memory:') {
-      const dir = path.dirname(dbPath);
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    }
-
-    const sqlite = new Database(dbPath);
-    sqlite.pragma('journal_mode = WAL');
-    sqlite.pragma('foreign_keys = ON');
-
-    _db = drizzle(sqlite, { schema });
-    runMigrations(_db);
-  }
+export function getDb(): Db {
+  if (!_db) throw new Error('Database not initialized — call initDb() first.');
   return _db;
 }
 
-function runMigrations(db: ReturnType<typeof drizzle>) {
-  db.run(`
+export async function initDb(): Promise<Db> {
+  let url: string;
+
+  if (env.NODE_ENV === 'test') {
+    url = ':memory:';
+  } else {
+    const dbPath = env.DATABASE_PATH;
+    const dir = path.dirname(dbPath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    url = `file:${dbPath}`;
+  }
+
+  _client = createClient({ url });
+  _db = drizzle(_client, { schema });
+  await runMigrations(_client);
+  return _db;
+}
+
+/** Reset for tests — creates a fresh in-memory DB on next initDb() call */
+export function resetDb(): void {
+  _db = null;
+  _client = null;
+}
+
+async function runMigrations(client: Client): Promise<void> {
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS import_jobs (
       id TEXT PRIMARY KEY,
       filename TEXT NOT NULL,
@@ -43,7 +55,7 @@ function runMigrations(db: ReturnType<typeof drizzle>) {
     )
   `);
 
-  db.run(`
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS releases (
       id TEXT PRIMARY KEY,
       version TEXT NOT NULL UNIQUE,
@@ -54,7 +66,7 @@ function runMigrations(db: ReturnType<typeof drizzle>) {
     )
   `);
 
-  db.run(`
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS work_items (
       id TEXT PRIMARY KEY,
       azure_id TEXT NOT NULL UNIQUE,
@@ -75,9 +87,4 @@ function runMigrations(db: ReturnType<typeof drizzle>) {
       story_points REAL
     )
   `);
-}
-
-/** Reset for tests — creates a fresh in-memory DB */
-export function resetDb() {
-  _db = null;
 }

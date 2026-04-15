@@ -10,7 +10,7 @@ const ALLOWED_MIME = new Set([
 
 const ALLOWED_EXT = new Set(['.csv', '.xlsx', '.xls']);
 
-export const upload = multer({
+export const uploadMiddleware = multer({
   dest: '/tmp/release-analytics-uploads/',
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
   fileFilter: (_req, file, cb) => {
@@ -18,9 +18,7 @@ export const upload = multer({
     if (ALLOWED_MIME.has(file.mimetype) || ALLOWED_EXT.has(ext)) {
       cb(null, true);
     } else {
-      const err: AppError = new Error('Only .csv and .xlsx files are accepted');
-      err.status = 400;
-      cb(err);
+      cb(new AppError(400, 'Only .csv and .xlsx files are accepted'));
     }
   },
 });
