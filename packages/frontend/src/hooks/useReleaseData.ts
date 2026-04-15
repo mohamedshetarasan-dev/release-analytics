@@ -17,3 +17,12 @@ export function useRelease(id: string) {
     staleTime: 5 * 60 * 1000,
   });
 }
+
+export function useWorkItems(id: string, type?: string) {
+  return useQuery({
+    queryKey: ['work-items', id, type],
+    queryFn: () => releasesApi.getWorkItems(id, { type, limit: 500 }),
+    enabled: Boolean(id),
+    staleTime: 5 * 60 * 1000,
+  });
+}

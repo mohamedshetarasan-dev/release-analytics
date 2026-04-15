@@ -1,39 +1,23 @@
 import { createClient, type Client } from '@libsql/client';
 import { drizzle } from 'drizzle-orm/libsql';
-import path from 'path';
-import fs from 'fs';
 import * as schema from '../db/schema';
-import { env } from './env';
 
 type Db = ReturnType<typeof drizzle<typeof schema>>;
-
 let _client: Client | null = null;
 let _db: Db | null = null;
 
 export function getDb(): Db {
-  if (!_db) throw new Error('Database not initialized — call initDb() first.');
+  if (!_db) throw new Error('Database not initialized. Call initDb() first.');
   return _db;
 }
 
 export async function initDb(): Promise<Db> {
-  let url: string;
-
-  if (env.NODE_ENV === 'test') {
-    url = ':memory:';
-  } else {
-    const dbPath = env.DATABASE_PATH;
-    const dir = path.dirname(dbPath);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    url = `file:${dbPath}`;
-  }
-
-  _client = createClient({ url });
+  _client = createClient({ url: ':memory:' });
   _db = drizzle(_client, { schema });
   await runMigrations(_client);
   return _db;
 }
 
-/** Reset for tests — creates a fresh in-memory DB on next initDb() call */
 export function resetDb(): void {
   _db = null;
   _client = null;

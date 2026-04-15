@@ -217,7 +217,11 @@ export async function runImport(
       }
     }
 
-    // 6. Upsert releases for every version we found
+    // 6. Clear all existing data before inserting the new sheet
+    await db.delete(workItems).run();
+    await db.delete(releases).run();
+
+    // 7. Insert releases for every version we found
     for (const version of releaseVersionsEncountered) {
       const existing = await db.select().from(releases).where(eq(releases.version, version)).get();
       if (!existing) {
@@ -231,16 +235,10 @@ export async function runImport(
       }
     }
 
-    // 7. Upsert work items in a transaction
+    // 8. Insert work items (table is empty after the clear above)
     const importableRows = validRows.filter((r) => r.release_version);
 
     for (const row of importableRows) {
-      const existingItem = await db
-        .select({ id: workItems.id })
-        .from(workItems)
-        .where(eq(workItems.azureId, row.azure_id))
-        .get();
-
       const itemData = {
         azureId:        row.azure_id,
         releaseVersion: row.release_version ?? null,
@@ -260,11 +258,7 @@ export async function runImport(
         storyPoints:    row.story_points ?? null,
       };
 
-      if (existingItem) {
-        await db.update(workItems).set(itemData).where(eq(workItems.azureId, row.azure_id)).run();
-      } else {
-        await db.insert(workItems).values({ id: uuidv4(), ...itemData }).run();
-      }
+      await db.insert(workItems).values({ id: uuidv4(), ...itemData }).run();
     }
 
     // All importable rows count as imported (inserts or updates)

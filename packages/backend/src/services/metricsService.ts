@@ -35,23 +35,14 @@ export async function getMetricsByVersion(version: string): Promise<ReleaseMetri
 
   // -----------------------------------------------------------------------
   // Metric 2: Average bug resolution time (days)
-  // resolved_date - activated_date; fallback to resolved_date - created_date
+  // closedDate - activatedDate
+  // Only bugs that have both dates are counted.
   // -----------------------------------------------------------------------
-  const resolvedBugs = bugs.filter((b) => b.resolvedDate != null);
+  const closedBugs = bugs.filter((b) => b.activatedDate != null && b.closedDate != null);
   let avgBugResolutionDays: number | null = null;
-  if (resolvedBugs.length > 0) {
-    let totalMs = 0;
-    let counted  = 0;
-    for (const bug of resolvedBugs) {
-      const start  = bug.activatedDate ?? bug.createdDate;
-      const end    = bug.resolvedDate!;
-      if (start == null) continue;
-      const diff = end - start;
-      if (diff < 0) continue; // data quality issue — skip
-      totalMs += diff;
-      counted++;
-    }
-    avgBugResolutionDays = counted > 0 ? msTodays(totalMs / counted) : null;
+  if (closedBugs.length > 0) {
+    const totalMs = closedBugs.reduce((sum, b) => sum + (b.closedDate! - b.activatedDate!), 0);
+    avgBugResolutionDays = msTodays(totalMs / closedBugs.length);
   }
 
   // -----------------------------------------------------------------------
@@ -76,8 +67,8 @@ export async function getMetricsByVersion(version: string): Promise<ReleaseMetri
   // Metric 4: Planned vs actual effort
   // Tasks → planned_hours + actual_hours; User Stories → story_points
   // -----------------------------------------------------------------------
-  const tasks       = allItems.filter((w) => w.type === 'task');
-  const userStories = allItems.filter((w) => w.type === 'user_story');
+  const tasks        = allItems.filter((w) => w.type === 'task');
+  const userStories  = allItems.filter((w) => w.type === 'user_story');
 
   const plannedHours = tasks.reduce((sum, t) => sum + (t.plannedHours ?? 0), 0);
   const actualHours  = tasks.reduce((sum, t) => sum + (t.actualHours ?? 0), 0);
@@ -97,6 +88,7 @@ export async function getMetricsByVersion(version: string): Promise<ReleaseMetri
     plannedHours,
     actualHours,
     effortVariancePercent,
+    userStoryCount:      userStories.length,
     storyPoints,
   };
 }
@@ -118,25 +110,17 @@ export async function getBugMetrics(version: string) {
     bugsByState[bug.state] = (bugsByState[bug.state] ?? 0) + 1;
   }
 
-  const resolvedBugs = bugs.filter((b) => b.resolvedDate != null);
+  const closedBugs = bugs.filter((b) => b.activatedDate != null && b.closedDate != null);
   let avgResolutionDays: number | null = null;
-  if (resolvedBugs.length > 0) {
-    let total = 0, count = 0;
-    for (const bug of resolvedBugs) {
-      const start = bug.activatedDate ?? bug.createdDate;
-      if (!start) continue;
-      const diff = bug.resolvedDate! - start;
-      if (diff < 0) continue;
-      total += diff;
-      count++;
-    }
-    avgResolutionDays = count > 0 ? msTodays(total / count) : null;
+  if (closedBugs.length > 0) {
+    const totalMs = closedBugs.reduce((sum, b) => sum + (b.closedDate! - b.activatedDate!), 0);
+    avgResolutionDays = msTodays(totalMs / closedBugs.length);
   }
 
   return {
     releaseVersion:   version,
     totalBugs:        bugs.length,
-    resolvedBugs:     resolvedBugs.length,
+    resolvedBugs:     closedBugs.length,
     bugsByState,
     avgResolutionDays,
   };
@@ -190,14 +174,15 @@ export async function getMetricsForReleases(versions: string[]): Promise<Release
 // ---------------------------------------------------------------------------
 function emptyMetrics(version: string): ReleaseMetrics {
   return {
-    releaseVersion:       version,
-    totalBugs:            0,
-    bugsByState:          {},
-    avgBugResolutionDays: null,
-    releaseDurationDays:  null,
-    plannedHours:         0,
-    actualHours:          0,
+    releaseVersion:        version,
+    totalBugs:             0,
+    bugsByState:           {},
+    avgBugResolutionDays:  null,
+    releaseDurationDays:   null,
+    plannedHours:          0,
+    actualHours:           0,
     effortVariancePercent: null,
-    storyPoints:          0,
+    userStoryCount:        0,
+    storyPoints:           0,
   };
 }
