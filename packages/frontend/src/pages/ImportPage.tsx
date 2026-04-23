@@ -14,10 +14,33 @@ export default function ImportPage() {
   return (
     <div style={{ maxWidth: 640 }}>
       <h1 style={{ margin: '0 0 4px', color: '#1F3864', fontSize: 22 }}>Import Data</h1>
-      <p style={{ color: '#718096', margin: '0 0 24px', fontSize: 14 }}>
+      <p style={{ color: '#718096', margin: '0 0 16px', fontSize: 14 }}>
         Upload a <strong>.csv</strong> or <strong>.xlsx</strong> file exported from Azure DevOps.
         Work items will be parsed and grouped by release version automatically.
       </p>
+
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        marginBottom: 24,
+        padding: '10px 14px',
+        background: '#ebf8ff',
+        border: '1px solid #bee3f8',
+        borderRadius: 8,
+        fontSize: 13,
+        color: '#2b6cb0',
+      }}>
+        <span>📄</span>
+        <span>Not sure about the format?</span>
+        <a
+          href="/import-template.csv"
+          download="import-template.csv"
+          style={{ fontWeight: 600, color: '#2b6cb0', textDecoration: 'underline' }}
+        >
+          Download CSV template
+        </a>
+      </div>
 
       <FileUploader onFile={handleFile} disabled={uploading} />
       <UploadProgress

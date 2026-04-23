@@ -13,10 +13,10 @@ interface Props {
   data: ReleaseMetrics[];
 }
 
-export default function BugCountChart({ data }: Props) {
+export default function ActualEffortChart({ data }: Props) {
   const chartData = data.map((d) => ({
     version: d.releaseVersion,
-    Bugs: d.totalBugs,
+    'Actual (hrs)': d.actualHours,
   }));
 
   return (
@@ -24,9 +24,9 @@ export default function BugCountChart({ data }: Props) {
       <BarChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
         <XAxis dataKey="version" tick={{ fontSize: 12 }} />
-        <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+        <YAxis tick={{ fontSize: 12 }} />
         <Tooltip />
-        <Bar dataKey="Bugs" fill="#f6ad55" />
+        <Bar dataKey="Actual (hrs)" fill="#f6ad55" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

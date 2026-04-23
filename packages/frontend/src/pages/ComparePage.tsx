@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { useReleases } from '../hooks/useReleaseData';
 import { useCompareMetrics } from '../hooks/useMetrics';
 import MetricCard from '../components/shared/MetricCard';
+import ActualEffortChart from '../components/charts/ActualEffortChart';
+import EffortPerPointChart from '../components/charts/EffortPerPointChart';
+import StoryPointsEffortChart from '../components/charts/StoryPointsEffortChart';
 import BugCountChart from '../components/charts/BugCountChart';
 import BugResolutionChart from '../components/charts/BugResolutionChart';
 import EffortComparisonChart from '../components/charts/EffortComparisonChart';
@@ -212,7 +215,16 @@ export default function ComparePage() {
 
           {/* Charts */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))', gap: 20, marginBottom: 20 }}>
-            <ChartSection title="Bug Count by State">
+            <ChartSection title="Actual Effort / Story Point">
+              <EffortPerPointChart data={metrics} />
+            </ChartSection>
+            <ChartSection title="Actual Effort">
+              <ActualEffortChart data={metrics} />
+            </ChartSection>
+            <ChartSection title="Story Points vs Actual Effort">
+              <StoryPointsEffortChart data={metrics} />
+            </ChartSection>
+            <ChartSection title="Bug Count">
               <BugCountChart data={metrics} />
             </ChartSection>
             <ChartSection title="Avg Bug Resolution Time">
