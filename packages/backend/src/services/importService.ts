@@ -29,6 +29,7 @@ const RawRowSchema = z.object({
   planned_hours:   z.union([z.string(), z.number()]).nullish().transform(toFloat),
   actual_hours:    z.union([z.string(), z.number()]).nullish().transform(toFloat),
   story_points:    z.union([z.string(), z.number()]).nullish().transform(toFloat),
+  severity:        z.string().nullish().default(null),
 });
 
 type RawRow = z.infer<typeof RawRowSchema>;
@@ -256,6 +257,7 @@ export async function runImport(
         plannedHours:   row.planned_hours ?? null,
         actualHours:    row.actual_hours ?? null,
         storyPoints:    row.story_points ?? null,
+        severity:       row.severity ?? null,
       };
 
       await db.insert(workItems).values({ id: uuidv4(), ...itemData }).run();

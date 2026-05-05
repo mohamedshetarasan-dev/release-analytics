@@ -68,7 +68,8 @@ async function runMigrations(client: Client): Promise<void> {
       iteration_path TEXT,
       planned_hours REAL,
       actual_hours REAL,
-      story_points REAL
+      story_points REAL,
+      severity TEXT
     )
   `);
 }

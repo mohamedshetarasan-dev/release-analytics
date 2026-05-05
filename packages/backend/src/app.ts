@@ -21,10 +21,12 @@ app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 import uploadsRouter from './routes/uploads';
 import releasesRouter from './routes/releases';
 import metricsRouter from './routes/metrics';
+import adminRouter from './routes/admin';
 
 app.use('/api/v1/uploads', uploadsRouter);
 app.use('/api/v1/releases', releasesRouter);
 app.use('/api/v1/releases', metricsRouter);
+app.use('/api/v1/admin', adminRouter);
 
 // Serve frontend in production
 const frontendDist = path.resolve(__dirname, '../../frontend/dist');

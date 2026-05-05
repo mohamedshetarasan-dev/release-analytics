@@ -1,11 +1,33 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FileUploader from '../components/upload/FileUploader';
 import UploadProgress from '../components/upload/UploadProgress';
 import { useUpload } from '../hooks/useUpload';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function ImportPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { upload, uploading, progress, result, error, reset } = useUpload();
+  const [clearing, setClearing] = useState(false);
+  const [clearMsg, setClearMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const handleClear = async () => {
+    if (!confirm('Are you sure you want to clear all data? This cannot be undone.')) return;
+    setClearing(true);
+    setClearMsg(null);
+    try {
+      const res = await fetch('/api/v1/admin/clear', { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to clear');
+      await queryClient.invalidateQueries();
+      reset();
+      setClearMsg({ ok: true, text: 'All data cleared. Ready for a new import.' });
+    } catch {
+      setClearMsg({ ok: false, text: 'Failed to clear data. Please try again.' });
+    } finally {
+      setClearing(false);
+    }
+  };
 
   const handleFile = (file: File) => {
     upload(file);
@@ -50,6 +72,58 @@ export default function ImportPage() {
         error={error}
         onReset={reset}
       />
+
+      {/* Clear database */}
+      <div style={{
+        marginTop: 32,
+        padding: '16px 20px',
+        border: '1px solid #fed7d7',
+        borderRadius: 8,
+        background: '#fff5f5',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 16,
+        flexWrap: 'wrap',
+      }}>
+        <div>
+          <div style={{ fontWeight: 600, color: '#c53030', fontSize: 14 }}>Clear All Data</div>
+          <div style={{ color: '#718096', fontSize: 13, marginTop: 2 }}>
+            Remove all releases and work items to start fresh.
+          </div>
+        </div>
+        <button
+          onClick={handleClear}
+          disabled={clearing}
+          style={{
+            padding: '8px 20px',
+            background: clearing ? '#feb2b2' : '#e53e3e',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 6,
+            cursor: clearing ? 'not-allowed' : 'pointer',
+            fontWeight: 600,
+            fontSize: 14,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {clearing ? 'Clearing…' : '🗑 Clear Database'}
+        </button>
+      </div>
+
+      {clearMsg && (
+        <div style={{
+          marginTop: 10,
+          padding: '10px 14px',
+          borderRadius: 6,
+          fontSize: 13,
+          background: clearMsg.ok ? '#f0fff4' : '#fff5f5',
+          color: clearMsg.ok ? '#276749' : '#c53030',
+          border: `1px solid ${clearMsg.ok ? '#9ae6b4' : '#feb2b2'}`,
+        }}>
+          {clearMsg.ok ? '✅' : '❌'} {clearMsg.text}
+        </div>
+      )}
 
       {result && !uploading && (
         <div style={{ marginTop: 16, display: 'flex', gap: 12 }}>

@@ -5,6 +5,7 @@ import ActualEffortChart from '../components/charts/ActualEffortChart';
 import EffortPerPointChart from '../components/charts/EffortPerPointChart';
 import StoryPointsEffortChart from '../components/charts/StoryPointsEffortChart';
 import BugCountChart from '../components/charts/BugCountChart';
+import BugSeverityChart from '../components/charts/BugSeverityChart';
 import BugResolutionChart from '../components/charts/BugResolutionChart';
 import EffortComparisonChart from '../components/charts/EffortComparisonChart';
 import ReleaseDurationChart from '../components/charts/ReleaseDurationChart';
@@ -144,6 +145,9 @@ export default function DashboardPage() {
             </ChartSection>
             <ChartSection title="Bug Count">
               <BugCountChart data={metrics} />
+            </ChartSection>
+            <ChartSection title="Bug Severity per Release">
+              <BugSeverityChart data={metrics} />
             </ChartSection>
             <ChartSection title="Avg Bug Resolution Time">
               <BugResolutionChart data={metrics} slaDays={SLA_DAYS} />

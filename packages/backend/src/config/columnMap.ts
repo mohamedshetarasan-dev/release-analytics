@@ -19,6 +19,7 @@ export const COLUMN_MAP = {
   planned_hours:   ['Original Estimate'], // hours; Tasks use this
   actual_hours:    ['Completed Work'],    // hours; Tasks use this
   story_points:    ['Story Points'],      // User Stories use this
+  severity:        ['Severity', 'Priority', 'Bug Severity'], // e.g. "1 - Critical", "2 - High"
 } as const;
 
 /** Work item types to skip entirely — not relevant for release metrics */

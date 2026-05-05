@@ -27,6 +27,7 @@ export const workItems = sqliteTable('work_items', {
   plannedHours:   real('planned_hours'),
   actualHours:    real('actual_hours'),
   storyPoints:    real('story_points'),
+  severity:       text('severity'),
 });
 
 export const importJobs = sqliteTable('import_jobs', {

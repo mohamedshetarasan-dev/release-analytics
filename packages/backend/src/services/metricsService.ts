@@ -25,12 +25,18 @@ export async function getMetricsByVersion(version: string): Promise<ReleaseMetri
   }
 
   // -----------------------------------------------------------------------
-  // Metric 1: Bug count & breakdown by state
+  // Metric 1: Bug count & breakdown by state / severity
   // -----------------------------------------------------------------------
   const bugs = allItems.filter((w) => w.type === 'bug');
   const bugsByState: Record<string, number> = {};
   for (const bug of bugs) {
     bugsByState[bug.state] = (bugsByState[bug.state] ?? 0) + 1;
+  }
+
+  const bugsBySeverity: Record<string, number> = {};
+  for (const bug of bugs) {
+    const sev = bug.severity ?? 'Unspecified';
+    bugsBySeverity[sev] = (bugsBySeverity[sev] ?? 0) + 1;
   }
 
   // -----------------------------------------------------------------------
@@ -83,6 +89,7 @@ export async function getMetricsByVersion(version: string): Promise<ReleaseMetri
     releaseVersion:      version,
     totalBugs:           bugs.length,
     bugsByState,
+    bugsBySeverity,
     avgBugResolutionDays,
     releaseDurationDays,
     plannedHours,
@@ -177,6 +184,7 @@ function emptyMetrics(version: string): ReleaseMetrics {
     releaseVersion:        version,
     totalBugs:             0,
     bugsByState:           {},
+    bugsBySeverity:        {},
     avgBugResolutionDays:  null,
     releaseDurationDays:   null,
     plannedHours:          0,

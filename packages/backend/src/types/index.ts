@@ -48,6 +48,7 @@ export interface ReleaseMetrics {
   releaseVersion: string;
   totalBugs: number;
   bugsByState: Record<string, number>;
+  bugsBySeverity: Record<string, number>;
   avgBugResolutionDays: number | null;
   releaseDurationDays: number | null;
   plannedHours: number;
